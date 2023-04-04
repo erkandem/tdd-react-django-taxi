@@ -127,3 +127,88 @@ urlpatterns = [
 
 List: http://127.0.0.1:8000/api/trip/
 Detail: http://127.0.0.1:8000/api/trip/0fe29a3e-edb4-4dcd-92a7-212b2fe021d5/
+
+### 6 Websockets - Part 1
+
+Goal of this part was to set up the connectivity via the websocket protocol.
+The created connectivity was also protected with authentication
+
+#### Websocket "view"
+
+What would correspond to a classic django view is called `consumer`.
+For that reason a new module in the trips app called `consumers` was created.
+
+Since we intend to exchange JSON encoded message for our JS front end 
+a `channels.generic.websocket.AsyncJsonWebsocketConsumer` was chosen for the consumer
+super class.
+
+Ref: https://channels.readthedocs.io/en/stable/topics/consumers.html#asyncjsonwebsocketconsumer
+
+Async? Should work better for Python anyway (GIL).
+ - `accept` was overwritten to implement a check for authentication
+ - `disconnect` was necessary to overwrite to call the super classes' method
+ - `receive_json` was also necessary since it's not implemented
+ 
+Further reading on async:
+ - https://docs.python.org/3/library/asyncio.html
+ - https://www.aeracode.org/2018/02/19/python-async-simplified/
+ - https://testdriven.io/blog/concurrency-parallelism-asyncio/
+
+#### Wiring up the Communicator
+
+the application object in the projects `asgi` module is used and expanded with
+`channels.routing.ProtocolTypeRouter`
+
+```python 
+application = ProtocolTypeRouter(
+    {
+        "http": get_asgi_application(),
+        "websocket": TokenAuthMiddlewareStack(
+            URLRouter([path("taxi/", TaxiConsumer.as_asgi())])
+        ),
+    }
+)
+
+
+```
+#### Testing the Websocket
+
+ - We are forced to use pytest because of the channels dependencies.
+   pytest in combo with django needs an ini with the `DJANGO_SETTINGS_MODULE` key value pair. 
+ - Instead of the database fixture, the decorator was used to permit db access.
+ - Since we are testing async code we use the pytest plugin for asyncio to enable the test to run.
+ - The `settings` fixture is used to monkeypatch our `CHANNEL_LAYERS` settings
+   Instead of the redis layer, an in memory storage is used.
+```python
+TEST_CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
+}
+```
+ - `channels.testing.WebsocketCommunicator` is the equivalent to classic `client`.
+    - It's kwargs are the `asgi` application (like with the Flask client) and
+    - the `path` (like with a http client)
+
+```python
+@pytest.mark.asyncio
+@pytest.mark.django_db(transaction=True)
+    class TestWebSocket
+       async def test_cannot_connect_to_socket(self, settings):
+         settings.CHANNEL_LAYERS = TEST_CHANNEL_LAYERS
+         communicator = WebsocketCommunicator(application=application, path="/taxi/")
+         connected, _ = await communicator.connect()
+         assert connected is False
+         await communicator.disconnect()
+```
+
+#### Authentication
+
+The authentication is done via JWT token which is passed as a query parameter.
+The token is read out and the "context" here called "scope" of the request is populated with the result.
+The above step is done using a middleware, placed in the `middleware` module of the project package.
+
+Specifically, the `get_user` method is overwritten to account for the different location of the token.
+
+Ref: https://docs.djangoproject.com/en/4.1/topics/http/middleware/ 
+
