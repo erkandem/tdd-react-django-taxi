@@ -212,3 +212,45 @@ Specifically, the `get_user` method is overwritten to account for the different 
 
 Ref: https://docs.djangoproject.com/en/4.1/topics/http/middleware/ 
 
+### 7 Websockets Part 2
+
+
+In this part, the feature to request a trip will be implemented.
+That feature requires the distinction between riders and drivers, which
+is done using the `Group` relation of the `User` model.
+
+A channel for drivers is implemented to listen to these trip requests.
+
+#### Driver Role and Channel
+
+Upon establishing a websocket at the taxi endpoint a user associated with the 
+`driver` `Group` is added to the `drivers` channel.
+
+#### Trip Model Extension
+
+We extended the `Trip` model with `rider` and `driver` which both are foreign keys
+to the custom `User` model.
+
+Since I specified the fields in `Tripserializer`, I needed to extend the `fields  tuple
+with the `rider` and `driver` model.
+
+To prepare a more detailed response, a nested serializer was defined, which
+will provide more details on both the rider and the driver.
+
+Finally, the admin page also needed to be expanded to the new fields.
+
+#### Consumer / View changes
+
+We implemented a new message type in the respective test called `create.trip`.
+The `receive_json` method works as an internal router. There, we forward the
+message to the respective handler. In this case it's create_trip.
+
+Database operations are factored out to private sync methods decorated with 
+`database_sync_to_async` which enables database access. Sync, bc the decorator
+expects to take a **sync** method.  Maybe this would be different if worked 
+with an async db driver. But here it `psycopg2`.
+
+#### Broadcasting the Trip Request
+
+The trip is broadcast during the creation of a trip to the drivers group.
+
