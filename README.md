@@ -254,3 +254,115 @@ with an async db driver. But here it `psycopg2`.
 
 The trip is broadcast during the creation of a trip to the drivers group.
 
+### 8 Websockets Part 3
+
+#### A Word on Debugging
+
+I install `ipdb` for more "comfortable" debugging which works nice 
+with async code (and tests).
+At the point I want to debug the sync/async code I added which dropped a
+shell without issues.
+```python
+import ipdb;ipdb.set_trace()
+```
+In tests though, we need to add the `-s` flag to the `pytest` command.
+
+A snippet to print database queries via Django:
+```python
+# settings.py
+LOGGING = {
+    'version': 1,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django.db.backends': {
+            'level': 'DEBUG',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+    }
+}
+```
+
+
+Also added `django-extension` package with its tools to the project.
+E.g. a tool to create the application DB schema:
+```shell
+./manage.py graph_models -a -g -o my_project_visualized.png
+```
+
+![part1-chapter6-project-database.png](docs%2Fpart1-chapter6-project-database.png)
+
+#### Accepting a Trip Request
+
+The trip request is accepted by driver upon which the Trip object is updated and
+the driver is added to the trip group.
+
+
+#### Reconnecting a Driver to the Trip Group
+
+We added a driver specific test here but the feature was already implemented
+since we didn't distinguish between the roles of a user within `trips.consumers.TaxiConsumer.connect`.
+
+#### Additional Questions
+
+> The rider cancels their request after a driver accepts it
+
+ - The trip is updated to the respective status by the rider (extend `update_trip` method)
+ - A group message is sent out
+ - Thereafter, the group is dissolved (and participants are removed from the group)
+
+> The server alerts all other drivers in the driver pool that someone has accepted a request.
+
+ - send a message to the drivers group with masked driver id but updated status so
+   the UI can react
+
+> The driver periodically broadcasts their location to the rider during a trip.
+
+ - location data schema would need to be set up, assuming it's simple coordinates
+ - send the coordinates to the trip group
+ - front end receives the package via its websocket connection and renders it
+ - dots of location broadcast can be connected to a line, but would not store them on the DB
+
+> The server only allows a rider to request one trip at a time.
+
+ - during the processing of the `create.trip` message type we query the DB
+   for any unfinished trips and decline the creation of a new Trip if we do find
+   unfinished trip.
+ - The message should include the ID of the unfinished trip so the UI can render
+   useful advice to the rider
+
+> The rider can share their trip with another rider, who can join the trip and
+> receive updates.
+
+ - calls for a new "route" in `receive_json`
+  a) other user is invited: need an identification of the invited rider
+     - find them and send them a message about the invitation which he can
+       decline or accept
+     - decline: relay a message to the host rider to that the invited rider has declined
+     - accept: relay a success message to both and add the invited user to the trip group
+ - This  requires an update to the Trip model
+   - we need to know whom to bill
+   - the ForeignKey field needs to be refactored to  M2M relation
+
+   b) user can independently ask to join
+    - bad idea
+
+> The server only shares a trip request to drivers in a specific geographic location.
+
+   - we need to collect the location of the users (driver in this case specifically)
+   - we need to set radius or calculate a travel time equivalent of a radius
+   - with a radius around the pick-up location we can determine which drivers qualify
+   - the front end discards trip requests based on this
+   - or we create driver groups based on country, state/province/ city
+
+> If no drivers accept the request within a certain timespan, the server cancels
+> the request and returns a message to the rider.
+
+ - backend regular job to collect trips with status requested and
+  check the timestamp for issue a timeout.
+ - email message from that backend job? or how would do it within the communicator?

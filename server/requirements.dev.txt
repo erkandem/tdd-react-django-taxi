@@ -11,6 +11,8 @@ asgiref==3.6.0
     #   channels-redis
     #   daphne
     #   django
+asttokens==2.2.1
+    # via stack-data
 async-timeout==4.0.2
     # via
     #   -r requirements.txt
@@ -30,6 +32,8 @@ automat==22.10.0
     # via
     #   -r requirements.txt
     #   twisted
+backcall==0.2.0
+    # via ipython
 black==23.3.0
     # via -r requirements.dev.in
 build==0.10.0
@@ -60,20 +64,29 @@ cryptography==40.0.1
     #   service-identity
 daphne==4.0.0
     # via -r requirements.txt
+decorator==5.1.1
+    # via
+    #   ipdb
+    #   ipython
 django==4.1.7
     # via
     #   -r requirements.txt
     #   channels
+    #   django-extensions
     #   djangorestframework
     #   djangorestframework-simplejwt
 django-environ==0.10.0
     # via -r requirements.txt
+django-extensions==3.2.1
+    # via -r requirements.dev.in
 djangorestframework==3.14.0
     # via
     #   -r requirements.txt
     #   djangorestframework-simplejwt
 djangorestframework-simplejwt==5.2.2
     # via -r requirements.txt
+executing==1.2.0
+    # via stack-data
 hyperlink==21.0.0
     # via
     #   -r requirements.txt
@@ -90,8 +103,18 @@ incremental==22.10.0
     #   twisted
 iniconfig==2.0.0
     # via pytest
+ipdb==0.13.13
+    # via -r requirements.dev.in
+ipython==8.12.0
+    # via
+    #   -r requirements.dev.in
+    #   ipdb
 isort==5.12.0
     # via -r requirements.dev.in
+jedi==0.18.2
+    # via ipython
+matplotlib-inline==0.1.6
+    # via ipython
 msgpack==1.0.5
     # via
     #   -r requirements.txt
@@ -103,8 +126,14 @@ packaging==23.0
     #   black
     #   build
     #   pytest
+parso==0.8.3
+    # via jedi
 pathspec==0.11.1
     # via black
+pexpect==4.8.0
+    # via ipython
+pickleshare==0.7.5
+    # via ipython
 pillow==9.5.0
     # via -r requirements.txt
 pip-tools==6.12.3
@@ -113,8 +142,14 @@ platformdirs==3.2.0
     # via black
 pluggy==1.0.0
     # via pytest
+prompt-toolkit==3.0.38
+    # via ipython
 psycopg2-binary==2.9.5
     # via -r requirements.txt
+ptyprocess==0.7.0
+    # via pexpect
+pure-eval==0.2.2
+    # via stack-data
 pyasn1==0.4.8
     # via
     #   -r requirements.txt
@@ -128,6 +163,10 @@ pycparser==2.21
     # via
     #   -r requirements.txt
     #   cffi
+pygments==2.14.0
+    # via ipython
+pygraphviz==1.10
+    # via -r requirements.dev.in
 pyjwt==2.6.0
     # via
     #   -r requirements.txt
@@ -168,6 +207,12 @@ sqlparse==0.4.3
     # via
     #   -r requirements.txt
     #   django
+stack-data==0.6.2
+    # via ipython
+traitlets==5.9.0
+    # via
+    #   ipython
+    #   matplotlib-inline
 twisted[tls]==22.10.0
     # via
     #   -r requirements.txt
@@ -180,6 +225,8 @@ typing-extensions==4.5.0
     # via
     #   -r requirements.txt
     #   twisted
+wcwidth==0.2.6
+    # via prompt-toolkit
 wheel==0.40.0
     # via pip-tools
 zope-interface==6.0

@@ -24,6 +24,8 @@ class TaxiConsumer(AsyncJsonWebsocketConsumer):
                     channel=self.channel_name,
                 )
             # connect the user to unfinished trips
+            # works on both riders and drivers, since we don't
+            # distinguish between them in the getter for the trip IDs
             for trip_id in await self._get_trip_ids(user):
                 await self.channel_layer.group_add(
                     group=trip_id,
@@ -68,7 +70,7 @@ class TaxiConsumer(AsyncJsonWebsocketConsumer):
 
     @database_sync_to_async
     def _get_trip_data(self, trip: Trip) -> dict[str, Any]:
-        """serialize the response object to requested trip"""
+        """serialize the response object from a  ``Trip`` ORM object"""
         return NestedTripSerializer(trip).data
 
     @database_sync_to_async
@@ -127,6 +129,47 @@ class TaxiConsumer(AsyncJsonWebsocketConsumer):
             }
         )
 
+    @database_sync_to_async
+    def _update_trip(self, data: dict[str, any]) -> Trip:
+        """"""
+        # TODO: is the driver_id in the data the same as the logged in driver?
+        # TODO: is the status transition valid? A change from `REQUESTED` to in `INPROGRESS`
+        #       seems appropriate. But I see the need to stop e.g `CANCELED` ->`INPROGRESS`
+        # use get to avoid keyerror on ["id"] bc DoesNotExist is more Valuable to debug
+        instance = Trip.objects.get(id=data.get("id"))
+        serializer = TripSerializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        trip = serializer.update(instance, serializer.validated_data)
+        return trip
+
+    async def update_trip(self, message):
+        data = message.get("data")
+        # assign a driver to the trip
+        trip = await self._update_trip(data)
+        trip_data = await self._get_trip_data(trip)
+        # we add send the message to the trip group
+        # first before we add the driver to the trip group
+        # to avoid a duplicate message for the driver?
+        await self.channel_layer.group_send(
+            group=f"{trip.id}",
+            message={
+                "type": "echo.message",
+                "data": trip_data,
+            },
+        )
+        # add the driver to the group channel
+        await self.channel_layer.group_add(
+            group=f"{trip.id}",
+            channel=self.channel_name,
+        )
+        # return the response object
+        await self.send_json(
+            {
+                "type": "echo.message",
+                "data": trip_data,
+            }
+        )
+
     async def receive_json(self, content, **kwargs):
         """inspect the message type and forward the content to respective handler"""
         message_type = content.get("type")
@@ -134,3 +177,5 @@ class TaxiConsumer(AsyncJsonWebsocketConsumer):
             await self.echo_message(content)
         elif message_type == "create.trip":
             await self.create_trip(content)
+        elif message_type == "update.trip":
+            await self.update_trip(content)

@@ -5,4 +5,7 @@ pytest-asyncio
 pytest-django
 black
 isort
-
+django-extensions
+pygraphviz
+ipython
+ipdb

@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "django.contrib.postgres",
     # third party apps
     "rest_framework",
+    "django_extensions",
     # own apps
     "trips",
 ]
