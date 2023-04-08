@@ -366,3 +366,12 @@ since we didn't distinguish between the roles of a user within `trips.consumers.
  - backend regular job to collect trips with status requested and
   check the timestamp for issue a timeout.
  - email message from that backend job? or how would do it within the communicator?
+
+### 9 UI Support
+
+This part implements a more specific result of the API depending
+on what group  a user has. For that, `get_queryset` of the
+view set of the Trips view was adjusted.
+
+This helps to keep more relevant information for the logged-in user and
+eases the work on the front end.

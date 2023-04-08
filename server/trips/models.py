@@ -7,7 +7,18 @@ from django.shortcuts import reverse
 
 
 class User(AbstractUser):
-    pass
+    GROUP_RIDER = "rider"
+    GROUP_DRIVER = "driver"
+    GROUP_CHOICES = (
+        GROUP_RIDER,
+        GROUP_DRIVER,
+    )
+
+    @property
+    def group(self):
+        """TODO: What if a rider also signs up as a driver?"""
+        groups = self.groups.all()
+        return groups[0].name if groups else None
 
 
 class Trip(models.Model):
