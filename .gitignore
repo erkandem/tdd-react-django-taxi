@@ -2,6 +2,7 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,react
 .idea
 */media
+.yarn
 ### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/

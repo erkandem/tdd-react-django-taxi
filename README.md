@@ -400,3 +400,40 @@ assign the `rider` group to our user.
 **Todos**:
  - enable the user to change/recover password
  - enable the user to change user profile details (which, he is allowed to change)
+
+## Part 2 The UI - React
+
+### 1 Introduction
+
+The learning objectives are set to be
+ 
+ - Scaffold a React app
+ - Functional React components including React Hooks
+ - Navigation/routing on our SPA
+ - Unit and E2E testing with Cypress
+ - Mocking Ajax with Cypress
+ - Implement Bootstrap CSS framework
+ - Forms
+ - Containerize both front and back end
+ - Build authentication for end users (sign up, log in)
+
+### 2 React Setup
+
+| package | tutorial | project |
+|---------|----------|---------|
+| node    | 19.0.0   | 19.8.1  |
+| npm     | 8.19.2   | 9.5.1   |
+| yarn    | 1.22.17  | 3.5.0   |
+|         |          |         |
+
+`yarn` is used to trigger `react-app`
+
+Refs:
+ - https://create-react-app.dev/docs/getting-started/
+ - https://yarnpkg.com/getting-started/install
+
+Install default dependencies and create a template app:
+```sh
+# tdd-taxi/client
+yarn create react-app client
+```
