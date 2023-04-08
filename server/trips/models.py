@@ -13,6 +13,11 @@ class User(AbstractUser):
         GROUP_RIDER,
         GROUP_DRIVER,
     )
+    photo = models.ImageField(
+        upload_to="photos",
+        null=True,
+        blank=True,
+    )
 
     @property
     def group(self):

@@ -7,9 +7,12 @@ TODO:
 """
 import base64
 import json
+from io import BytesIO
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
+from django.core.files.uploadedfile import SimpleUploadedFile
+from PIL import Image
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -40,8 +43,16 @@ def create_user(
     return user
 
 
+def create_photo_file():
+    data = BytesIO()
+    Image.new("RGB", (100, 100)).save(data, "PNG")
+    data.seek(0)
+    return SimpleUploadedFile("photo.png", data.getvalue())
+
+
 class AuthenticationTest(APITestCase):
     def test_user_can_sign_up(self):
+        photo_file = create_photo_file()
         url = reverse("sign_up")
         User = get_user_model()
         data = {
@@ -51,6 +62,7 @@ class AuthenticationTest(APITestCase):
             "password1": get_default_test_password(),
             "password2": get_default_test_password(),
             "group": "rider",
+            "photo": photo_file,
         }
         pre_request_user_count = User.objects.count()
 

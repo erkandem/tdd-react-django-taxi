@@ -375,3 +375,28 @@ view set of the Trips view was adjusted.
 
 This helps to keep more relevant information for the logged-in user and
 eases the work on the front end.
+
+### 10 User Photos
+
+ - User uploads: media files
+ - Route: `MEDIA_URL`
+ - Physical Location: `MEDIA_ROOT`, can be path or e.g. Bucket, S3 etc
+   Ref: https://docs.djangoproject.com/en/4.2/ref/settings/#media-root
+   Ref: https://testdriven.io/blog/storing-django-static-and-media-files-on-amazon-s3/
+ - plugged in during development in the project `urlpatterns` with
+  `django.conf.urls.static.static`
+  Wrapped the extension of `urlpatterns` with check for the `DEBUG` setting
+ - **Used during running tests!**
+ - extended the `User` model with `models.ImageField`, where we can specificy
+   a subdirectory via the `upload_to` kwarg
+ - Pillow used to generate an image in a test fixture
+
+
+Tried to check in admin and the API for trips. But of course, the user
+I was using was created before we cared about groups.
+We can create the rider and driver group at the admin interface and
+assign the `rider` group to our user.
+
+**Todos**:
+ - enable the user to change/recover password
+ - enable the user to change user profile details (which, he is allowed to change)
