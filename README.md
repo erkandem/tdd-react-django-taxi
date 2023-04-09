@@ -591,3 +591,126 @@ Ref:
  - Bootrap React components: https://react-bootstrap.github.io/
  - Bootstrap + Router for React: https://github.com/react-bootstrap/react-router-bootstrap
  - Bootstrap themes: https://bootswatch.com/
+
+
+### Forms
+
+#### Setup
+
+`Formik` is used as a plugin for creating and handling forms.
+At this stage, validation is left out. Should be done at least on the backend.
+Recall, that any group passed on would be created during sign-up in the default version
+of the tutorial. (see `trips.serializers.UserSerializer.validate_group`)
+
+A selection of form related libraries can be found at https://github.com/enaqx/awesome-react#forms
+
+```sh
+yarn add formik
+# @2.2.9 both in the tutorial and the project
+```
+
+#### Example
+A basic example without bootstrap:
+```js
+import React from "react";
+import ReactDOM from "react-dom";
+import { Formik, Field, Form } from "formik";
+import "./styles.css";
+
+function App() {
+  return (
+    <div className="App">
+      <h1>Contact Us</h1>
+      <Formik
+        initialValues={{ name: "", email: "" }}
+        onSubmit={async (values) => {
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          alert(JSON.stringify(values, null, 2));
+        }}
+      >
+        <Form>
+          <Field name="name" type="text" />
+          <Field name="email" type="email" />
+          <button type="submit">Submit</button>
+        </Form>
+      </Formik>
+    </div>
+  );
+}
+```
+Has some validation built in and activated by default 😍
+Ref:  https://formik.org/
+
+#### React stuff
+
+**functional component**
+ - function, can accept props or not
+ - return JSX
+
+**`useState`**
+
+Enable React to react upon a change of a variable The syntax is.
+When a new value is set to the variable **using the setter**, it will trigger a re-render
+with the new value taken into account.
+```js
+import { useState } from 'react';
+
+function MyComponent() {
+  const [age, setAge] = useState(28);
+  const [name, setName] = useState('Taylor');
+  const [todos, setTodos] = useState(() => createTodos());
+  // ...
+```
+This explains the redirection logic at the top of the two modified components:
+
+
+```js
+function LogIn(props) {
+  const [isSubmitted, setSubmitted] = useState(false);
+  const onSubmit = (values, actions) => setSubmitted(true);
+  if (isSubmitted) {
+    return <Navigate to="/" />;
+  }
+    return (
+      //..
+          <Formik
+            initialValues={{
+              username: "",
+              password: "",
+            }}
+            onSubmit={onSubmit}
+          >
+      //...
+    )
+```
+1) `isSubmitted` is initially `false`
+2) Clicking the submit button will forward the event to the custom `onSubmit` handler.
+3) which uses the setter returned by `useState` to change the value of `issubmitted`
+4) which triggers a rerender, but a persisting value for `isSubmitted`
+5) which return the redirect in the if-clause instead of the default JSX (i.e. sign up form)
+
+Ref: https://react.dev/reference/react/useState
+
+#### Testing
+
+Another dev dependency to handle file uploads
+```sh
+yarn add cypress-file-upload --dev
+# 5.0.8 both in tutorial and project 
+```
+
+which is "registered" in `client/cypress/support/e2e.js` with
+
+```js
+import "cypress-file-upload";
+```
+
+Which enables to interact with a file upload field: via `element.attachFile("images/photo.jpg")`.
+
+#### Todos & Questions
+
+ - `props` is described as a parameter but not accessed.
+ - `React` is imported but not used
+ - we should confirm the user that he has signed up indicate
+   that he can now log in.
+ - validation in formik?
