@@ -7,7 +7,7 @@ function SignUp(props) {
       <Link to="/">Home</Link>
       <h1>Sign Up</h1>
       <p>
-        Already have an account? <Link to="/log-in">Log In!</Link>
+        Already have an account? <Link to="/log-in">Log in!</Link>
       </p>
     </>
   );

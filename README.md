@@ -496,3 +496,51 @@ Refs:
  - `<> </>` https://react.dev/reference/react/Fragment
  - Browser compatability: https://browsersl.ist/#q=%3E+0.2%25%2C+not+dead%2C+not+op_mini+all
 
+### 4 End-to-End Testing with Cypress
+
+Cypress uses a browser to interact with our application from the users' perspective.
+If the backend had been plugged in yet, it indeed would cover the complete path of the UX
+from the UI to the database (and back) (i.e. end to end, e2e).
+
+#### Setup
+First, it needs to be installed:
+```sh
+yarn add cypress@10.11.0 --dev
+```
+
+The UI of Cypress can be started using:
+```sh
+yarn run cypress open
+```
+
+Configuration files are created.
+A browser can be chosen to do the testing in.
+
+The `baseUrl` property is set in the `cypress.config.js` to the dev client base URL:
+
+#### Test Code
+
+The test suit is initialized with a coverage of the navigation:
+```js
+// client/cypress/navigation.cy.js
+describe("Navigation", function() {
+  // ...
+  it('Can navigate to sign up from log in', function () {
+      cy.visit('/#/log-in');
+      cy.get('a').contains('Sign up').click();
+      cy.hash().should('eq', '#/sign-up');
+  });
+// ...
+})
+```
+As opposed to unit tests, cypress lives its own life in the root client directory
+instead of being part of the e.g. the `components` sub folder.
+
+The API was matched by Vue I guess, since React is older.
+The test has three statements at its core
+1) Navigate to the test subjects page
+2) Find the anchor/link element, which contains a pattern and click on it
+3) The assertion, which checks the browser URL
+
+The `contains` method is case-sensitive but matches substrings.
+
