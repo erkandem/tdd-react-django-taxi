@@ -437,3 +437,62 @@ Install default dependencies and create a template app:
 # tdd-taxi/client
 yarn create react-app client
 ```
+
+### 2 React Routing
+
+It this part routing will be implemented and enable these "pages"/ view:
+ - http://localhost:3000/
+ - http://localhost:3000/#/sign-up
+ - http://localhost:3000/#/log-in
+
+Routing is one of the key features of SPA IMO.
+The tut uses `react-router-dom` to implement routing.
+
+`createHashRouter`, specificaly the `HashRouter` component is used 
+Like in the Vue tut, it is equally discouraged to use.
+
+Instead, the `createBrowserRouter` factory or `BrowserRouter` component is recommended in 
+the docs.
+
+While it's possible to write the router separately and then plug it in, here
+it is included in the `index.js`.
+
+```js
+  // src/index.js
+
+    <HashRouter>
+      <Routes>
+        <Route path="/" element={<App />} />
+        <Route index element={<Landing />} />
+        <Route path="sign-up" element={<SignUp />} />
+        <Route path="log-in" element={<LogIn />} />
+      </Routes>
+    </HashRouter>
+```
+
+Essentially, a URL path is matched to the component which to which the URL should show. 
+The `index` keyword is used to mark a "home".
+
+It might be confusing because the "/" route is wired to the  `App` component.
+However, the `App` component serves just as an `Outlet` target. This compares to Vue
+with placing the `RouterView` component.
+
+```js
+// src/App.js
+function App() {
+  return (
+    <>
+      <Outlet />
+    </>
+  );
+}
+```
+`</></>` works as "synthetic" wrapper `div` element.
+
+Refs:
+ - `Outlet` : https://reactrouter.com/en/main/components/outlet
+ - `index` keyword: https://reactrouter.com/en/6.10.0/route/route#index
+ - `HashRouter`: https://reactrouter.com/en/main/routers/create-hash-router
+ - `<> </>` https://react.dev/reference/react/Fragment
+ - Browser compatability: https://browsersl.ist/#q=%3E+0.2%25%2C+not+dead%2C+not+op_mini+all
+
