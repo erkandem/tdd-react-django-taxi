@@ -544,3 +544,50 @@ The test has three statements at its core
 
 The `contains` method is case-sensitive but matches substrings.
 
+### 5 Bootsrap - Styling
+
+#### Setup
+```sh
+yarn add bootstrap \
+           react-bootstrap \
+           react-router-bootstrap \
+           bootswatch
+```
+
+Packages used:
+
+| Package                | Tutorial | Project |
+|------------------------|----------|---------|
+| bootstrap              | 5.2.2    | 5.2.3   |
+| react-bootstrap        | 2.5.0    | 2.7.2   |
+| react-router-bootstrap | 0.26.2   | 0.26.2  |
+| bootswatch             | 5.2.2    | 5.2.3   |
+
+#### Details
+
+Integration of React Bootsrap components worked flawless compared to Vue3,
+there the wrapper library is not ready yet.
+
+Interestingly, subelements are available via `.` syntax:
+```js
+<Breadcrumb>
+  <Breadcrumb.Item href="/#/">Home</Breadcrumb.Item>
+  <Breadcrumb.Item active>Log in</Breadcrumb.Item>
+</Breadcrumb>
+```
+
+Additional context for testing is provided on certain elements via the 
+`data-cy` attribute. I guess it will be used later. Anyway, all e2e tests passed.
+
+Check with:
+```sh
+yarn run cypress open
+```
+
+Beautiful 😍
+
+Ref: 
+ - Bootstrap: https://getbootstrap.com/
+ - Bootrap React components: https://react-bootstrap.github.io/
+ - Bootstrap + Router for React: https://github.com/react-bootstrap/react-router-bootstrap
+ - Bootstrap themes: https://bootswatch.com/
