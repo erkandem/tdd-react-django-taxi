@@ -6,5 +6,11 @@ module.exports = defineConfig({
       // implement node event listeners here
     },
     baseUrl: "http://localhost:3000",
+    env: {
+      credentials: {
+        username: "gary.cole@example.com",
+        password: "pAssw0rd",
+      },
+    },
   },
 });

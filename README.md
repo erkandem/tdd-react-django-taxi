@@ -714,3 +714,97 @@ Which enables to interact with a file upload field: via `element.attachFile("ima
  - we should confirm the user that he has signed up indicate
    that he can now log in.
  - validation in formik?
+
+
+### 7 HTTP Requests - Log In and Out
+
+
+#### Refactoring and Stub for Logging In and Logging Out
+The client code was refactored. The routing logic was moved out of the `index.js`
+into the App component within the `App.js`.
+
+Interesting: you can neste `<Route></Route>` elements.
+
+Methods and stateful variables were passt to the components during 
+initialisation
+
+```js
+<MyComponent thePropToPassToTheComponent={methodOrVariable}
+```
+
+Conditional parts within the returned JSX by the component:
+If `somethingEvaluatedForTruthiness` evaluates to `true` the `OtherTag` will get rendered.
+```js
+<SomeTag> 
+{
+    somethingEvaluatedForTruthiness && (<OtherTag>Component</OtherTag>)
+}
+</SomeTag>
+```
+
+When a component takes `props` as a key word, the props set during "instantiation"
+will be dot-accessible.
+```js
+//App.js
+// App component
+<LogIn logIn={logIn} />
+
+//Login.js
+function LogIn(props) {
+    props.logIn(values.username, values.password);
+  };
+```
+Otherwise, the props can be explicitly named:
+
+```js
+// App Component
+<Layout isLoggedIn={isLoggedIn} />
+
+// Layout subcomponent
+function Layout({ isLoggedIn }) {
+  //...
+            {isLoggedIn && (
+              <Form>
+                <Button type="button">Log out</Button>
+              </Form>
+            )}
+  //...
+}
+```
+#### HTTP via axios
+
+`axios` is used for xhr requests.
+```sh
+yarn add axios
+# 1.1.3 in tutorial and 1.3.5 in project
+```
+CSRF is going to be a topic for the form submit.
+Respective middleware is plugged in with Django apps by default.
+```py
+MIDDLEWARE = [
+    # ...
+    "django.middleware.csrf.CsrfViewMiddleware",
+    # ...
+]
+```
+Ref: CSRF in Django https://docs.djangoproject.com/en/4.1/ref/csrf/#ajax
+
+The log in route will trigger an XHR request later for now it stubbed.
+Some "business" logic was implemented 
+ - don't offer the log-in and sign up pages to logged in users
+ - alert on an error using bootsrap
+ - field specific errors were tied to the `formik` form using `actions.setFieldError`
+   Ref: https://formik.org/docs/api/formik#setfielderror-field-string-errormsg-string--void
+
+Additional topics:
+ - methods can be called in JSX within parenthesis using wrapping the call in an anonymous function
+ - Cypress allows environment variable in `cypress.config.js`. They can be accessed via `Cypress.env("envKeyName")`
+ - fixtures/helper function introduced for Cypress
+ - `(props)` vs `({ namedProp1, namedProp2 })` introduced
+ - `window.storage`
+   - storage of auth token in the browser via `window.localStorage.setItem("taxi.auth", JSON.stringify(jsObject))`
+     Only strings allowed.
+   - reading the auth token via `window.localStorage.getItem("taxi.auth")`
+   - log out / removal of auth token via `window.localStorage.removeItem("taxi.auth")`
+ - inline if/else `variableEvaluatedForTruthiness ? caseTrue : CaseFalse`
+
