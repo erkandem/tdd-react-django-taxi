@@ -846,3 +846,35 @@ Alternative but worse way to highlight errors `ErrorMessage`:
 <Form.Contol name="username" ...>
 <ErrorMessage name="username" />
 ```
+
+### 9 Dockerizing
+
+A `Dockerfile` as created for the `server` and `client` app
+with hot reloading by plugging in the code on the disk
+using volumes. 
+`.dockerignore` files were added to each subproject to avoid 
+bloating the image with e.g. node modules and the python virtual env.
+Images are not optimized for prod (cleaning of apt-get artefacts, multistage build etc.)
+
+To start the whole project - including the auxiliary service ad `docker-compose` file
+was created.
+`container_name` directive can be used which will to avoid the default naming scheme
+used by docker.
+
+Comments in JSX:
+```js
+import React from 'react'
+
+const Component = function () {
+  return (
+    {/* comment in JSX ... not via // ;) */}
+  )
+}
+export default Component
+```
+
+Found that I lost code during refactoring.
+I miss the unit tests
+
+Docker is cool to find undocumented system dependencies.
+Found, that I didn't specify `graphviz` and `graphviz-dev`.

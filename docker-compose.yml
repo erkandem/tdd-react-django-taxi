@@ -1,0 +1,54 @@
+version: '3.8'
+services:
+  taxi-server:
+    env_file:
+        - ./server/.env.docker
+    build:
+      context: ./server
+    command: python manage.py runserver 0.0.0.0:8000
+    container_name: taxi-server
+    depends_on:
+      - taxi-redis
+      - taxi-postgres
+    environment:
+      - REDIS_URL=redis://taxi-redis:6379/0
+      - PGDATABASE=taxi
+      - PGUSER=taxi
+      - PGPASSWORD=taxi
+      - PGHOST=taxi-database
+    ports:
+      - 8003:8000
+    volumes:
+      - ./server:/usr/src/app
+
+  taxi-redis:
+    container_name: taxi-redis
+    image: redis:7-alpine
+
+  taxi-postgres:
+    image: postgres:15-alpine
+    container_name: taxi-database
+    environment:
+      - POSTGRES_USER=taxi
+      - POSTGRES_PASSWORD=taxi
+    expose:
+      - 5432
+    volumes:
+      - taxi-database:/var/lib/postgresql/data
+
+  taxi-client:
+    build:
+      context: ./client
+    command: yarn start
+    container_name: taxi-client
+    depends_on:
+      - taxi-server
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    ports:
+      - 3001:3000
+    stdin_open: true
+    volumes:
+      - ./client:/usr/src/app
+volumes:
+  taxi-database:

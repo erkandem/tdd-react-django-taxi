@@ -65,6 +65,21 @@ function SignUp(props) {
               values,
             }) => (
               <Form noValidate onSubmit={handleSubmit}>
+                <Form.Group className="mb-3" controlId="username">
+                  <Form.Label>Username</Form.Label>
+                  <Form.Control
+                    className={"username" in errors ? "is-invalid" : ""}
+                    name="username"
+                    onChange={handleChange}
+                    required
+                    values={values.firstName}
+                  />
+                  {"username" in errors && (
+                    <Form.Control.Feedback type="invalid">
+                      {errors.username}
+                    </Form.Control.Feedback>
+                  )}
+                </Form.Group>
                 <Form.Group className="mb-3" controlId="firstName">
                   <Form.Label>First name:</Form.Label>
                   <Form.Control
@@ -105,9 +120,11 @@ function SignUp(props) {
                     type="password"
                     value={values.password}
                   />
-                  // TODO: I have doubts that this will work, bc
-                  //       django evaluates the password in the general validate method
-                  //       and the name of the field is not adding the tutorial code
+                  {/*
+                   TODO: I have doubts that this will work, bc
+                         django evaluates the password in the general validate method
+                         and the name of the field is not adding the tutorial code
+                  */}
                   {"password1" in errors && (
                     <Form.Control.Feedback type="invalid">
                       {errors.password1}
@@ -123,7 +140,7 @@ function SignUp(props) {
                     required
                     value={values.group}
                   >
-                    // TODO: this could be done in loop. No?
+                    {/* TODO: this could be done in loop. No? */}
                     <option value={userGroupChoices.rider.literal}>
                       {userGroupChoices.rider.label}
                     </option>
