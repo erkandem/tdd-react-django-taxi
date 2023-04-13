@@ -18,6 +18,58 @@ const logIn = () => {
   cy.wait("@logIn");
 };
 
+describe("Sign Up functionality", function () {
+  it("Can sign up.", function () {
+    cy.intercept("POST", "sign_up", {
+      statusCode: 201,
+      body: {
+        id: 1,
+        username: "gary.cole@example.com",
+        first_name: "Gary",
+        last_name: "Cole",
+        group: "driver",
+        photo: "/media/images/photo.jpg",
+      },
+    }).as("signUp");
+    cy.visit("/#/sign-up");
+    cy.get("input#username").type("gary.cole@example.com");
+    cy.get("input#firstName").type("Gary");
+    cy.get("input#lastName").type("Cole");
+    cy.get("input#password").type("pAssw0rd", { log: false });
+    cy.get("select#group").select("driver");
+    cy.get("input#photo").attachFile("images/photo.jpg");
+    cy.get("button").contains("Sign up").click();
+    cy.wait("@signUp");
+    cy.hash().should("eq", "#/log-in");
+  });
+
+  it("Shows invalid fields on sign up error.", function () {
+    cy.intercept("POST", "sign_up", {
+      statusCode: 400,
+      body: {
+        username: ["A user with that username already exists."],
+      },
+    }).as("signUp");
+    cy.visit("/#/sign-up");
+    cy.get("input#username").type("gary.cole@example.com");
+    cy.get("input#firstName").type("Gary");
+    cy.get("input#lastName").type("Cole");
+    cy.get("input#password").type("pAssw0rd", { log: false });
+    cy.get("select#group").select("driver");
+
+    // Handle file upload
+    cy.get("input#photo").attachFile("images/photo.jpg");
+    cy.get("button").contains("Sign up").click();
+    cy.wait("@signUp");
+    // assuming a single error that selector will work
+    // could be more specific. However, we already check for its content.
+    cy.get("div.invalid-feedback").contains(
+      "A user with that username already exists"
+    );
+    cy.hash().should("eq", "#/sign-up");
+  });
+});
+
 describe("Authentication", function () {
   it("Shows an alert on login error.", function () {
     const { username, password } = Cypress.env("credentials");
@@ -48,18 +100,6 @@ describe("Authentication", function () {
     // business logic is to show the log-out button
     // for logged-in users
     cy.get("button").contains("Log out");
-  });
-
-  it("Can sign up.", function () {
-    cy.visit("/#/sign-up");
-    cy.get("input#username").type("gary.cole@example.com");
-    cy.get("input#firstName").type("Gary");
-    cy.get("input#lastName").type("Cole");
-    cy.get("input#password").type("pAssw0rd", { log: false });
-    cy.get("select#group").select("driver");
-    cy.get("input#photo").attachFile("images/photo.jpg");
-    cy.get("button").contains("Sign up").click();
-    cy.hash().should("eq", "#/log-in");
   });
 
   it("Can not visit the login page when logged in.", function () {

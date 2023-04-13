@@ -808,3 +808,41 @@ Additional topics:
    - log out / removal of auth token via `window.localStorage.removeItem("taxi.auth")`
  - inline if/else `variableEvaluatedForTruthiness ? caseTrue : CaseFalse`
 
+### 8 HTTP Requests - Signing Up
+
+This chapter adds the axios request for the sign-up page and
+adds highlighting and feedback for the user on the sign-up form
+
+`FormData` instance is used to handle the actual transmission via API.
+Ref.: https://developer.mozilla.org/en-US/docs/Web/API/FormData
+Let's see later if it plays nice.
+
+The XHR request was placed in the sign-up component instead of the parent
+component bc we don't need the sign-up state in the parent in contrast to
+the login status.
+
+In the tutorial, a conditional was set for the classname if the input components to highlight 
+the respective field using CSS. The class name `is-invalid` is built in into bootsrap.
+Ref.: https://getbootstrap.com/docs/5.0/forms/validation/#server-side
+
+Additionally, `Form.Control.Feedback` of `bootstrap` was used to forward the error message:
+```js
+<Form.Control ...>
+  {
+    'username' in errors && (
+      <Form.Control.Feedback 
+        type='invalid'>
+        {errors.username}
+      </Form.Control.Feedback>
+    )
+  }
+  //...
+```
+The `Feedback` subcomponent will inject a `div` with a class attribute set to `invalid`
+Ref.: `client/node_modules/react-bootstrap/esm/Feedback.js`
+
+Alternative but worse way to highlight errors `ErrorMessage`:
+```js
+<Form.Contol name="username" ...>
+<ErrorMessage name="username" />
+```

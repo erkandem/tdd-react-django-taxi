@@ -1,12 +1,34 @@
 import React, { useState } from "react";
-import { Formik } from "formik";
+import { ErrorMessage, Formik } from "formik";
 import { Breadcrumb, Button, Card, Form } from "react-bootstrap";
 import { Link, Navigate } from "react-router-dom";
 import userGroupChoices from "../utils/constants";
+import axios from "axios";
 
 function SignUp(props) {
   const [isSubmitted, setSubmitted] = useState(false);
-  const onSubmit = (values, actions) => setSubmitted(true);
+  const onSubmit = async (values, actions) => {
+    const formData = new FormData();
+    formData.append("username", values.username);
+    formData.append("first_name", values.firstName);
+    formData.append("last_name", values.lastName);
+    // TODO: woooh, no retyping for safety? Could be validated on the frontend
+    //       also with regard to minimum safety level
+    formData.append("password1", values.password);
+    formData.append("password2", values.password);
+    formData.append("group", values.group);
+    formData.append("photo", values.photo);
+    try {
+      const url = "/api/sign_up";
+      const response = await axios.post(url, formData);
+      setSubmitted(true);
+    } catch (response) {
+      const data = response.response.data;
+      for (const value in data) {
+        actions.setFieldError(value, data[value].join(" "));
+      }
+    }
+  };
 
   if (props.isLoggedIn) {
     return <Navigate to="/" />;
@@ -34,46 +56,71 @@ function SignUp(props) {
             }}
             onSubmit={onSubmit}
           >
-            {({ handleChange, handleSubmit, values }) => (
+            {({
+              errors,
+              handleChange,
+              handleSubmit,
+              isSubmitting,
+              setFieldValue,
+              values,
+            }) => (
               <Form noValidate onSubmit={handleSubmit}>
-                <Form.Group className="mb-3" controlId="username">
-                  <Form.Label>Username:</Form.Label>
-                  <Form.Control
-                    name="username"
-                    onChange={handleChange}
-                    values={values.username}
-                  />
-                </Form.Group>
                 <Form.Group className="mb-3" controlId="firstName">
                   <Form.Label>First name:</Form.Label>
                   <Form.Control
+                    className={"firstName" in errors ? "is-invalid" : ""}
                     name="firstName"
                     onChange={handleChange}
+                    required
                     values={values.firstName}
                   />
+                  {"firstName" in errors && (
+                    <Form.Control.Feedback type="invalid">
+                      {errors.firstName}
+                    </Form.Control.Feedback>
+                  )}
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="lastName">
                   <Form.Label>Last name:</Form.Label>
                   <Form.Control
+                    className={"lastName" in errors ? "is-invalid" : ""}
                     name="lastName"
                     onChange={handleChange}
+                    required
                     values={values.lastName}
                   />
+                  {"lastName" in errors && (
+                    <Form.Control.Feedback type="invalid">
+                      {errors.lastName}
+                    </Form.Control.Feedback>
+                  )}
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="password">
                   <Form.Label>Password:</Form.Label>
                   <Form.Control
+                    className={"password1" in errors ? "is-invalid" : ""}
                     name="password"
                     onChange={handleChange}
+                    required
                     type="password"
                     value={values.password}
                   />
+                  // TODO: I have doubts that this will work, bc
+                  //       django evaluates the password in the general validate method
+                  //       and the name of the field is not adding the tutorial code
+                  {"password1" in errors && (
+                    <Form.Control.Feedback type="invalid">
+                      {errors.password1}
+                    </Form.Control.Feedback>
+                  )}
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="group">
                   <Form.Label>Group:</Form.Label>
                   <Form.Select
+                    className={"group" in errors ? "is-invalid" : ""}
                     name="group"
                     onChange={handleChange}
+                    required
                     value={values.group}
                   >
                     // TODO: this could be done in loop. No?
@@ -84,18 +131,35 @@ function SignUp(props) {
                       {userGroupChoices.driver.label}
                     </option>
                   </Form.Select>
+                  {"group" in errors && (
+                    <Form.Control.Feedback type="invalid">
+                      {errors.group}
+                    </Form.Control.Feedback>
+                  )}
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="photo">
                   <Form.Label>Photo:</Form.Label>
                   <Form.Control
+                    className={"photo" in errors ? "is-invalid" : ""}
                     name="photo"
-                    onChange={handleChange}
+                    onChange={(event) => {
+                      setFieldValue("photo", event.currentTarget.files[0]);
+                    }}
+                    required
                     type="file"
-                    value={values.photo}
                   />
+                  {"photo" in errors && (
+                    <Form.Control.Feedback type="invalid">
+                      {errors.photo}
+                    </Form.Control.Feedback>
+                  )}
                 </Form.Group>
                 <div className="d-grid mb-3">
-                  <Button type="submit" variant="primary">
+                  <Button
+                    disabled={isSubmitting}
+                    type="submit"
+                    variant="primary"
+                  >
                     Sign up
                   </Button>
                 </div>
