@@ -13,8 +13,8 @@ function LogIn(props) {
       );
       if (isError) {
         const data = response.response.data;
-        for (const value in data) {
-          actions.setFieldError(value, data[value].join(" "));
+        if (Object.keys(data).indexOf("detail") > -1) {
+          actions.setFieldError("detail", data.detail);
         }
       } else {
         setSubmitted(true);
@@ -44,8 +44,8 @@ function LogIn(props) {
           >
             {({ errors, handleChange, handleSubmit, isSubmitting, values }) => (
               <>
-                {"__all__" in errors && (
-                  <Alert variant="danger">{errors.__all__}</Alert>
+                {"detail" in errors && (
+                  <Alert variant="danger">{errors.detail}</Alert>
                 )}
                 <Form noValidate onSubmit={handleSubmit}>
                   <Form.Group className="mb-3" controlId="username">

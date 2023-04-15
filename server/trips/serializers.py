@@ -24,9 +24,8 @@ class UserSerializer(serializers.ModelSerializer):
     def validate_group(self, value):
         if value not in self.Meta.model.GROUP_CHOICES:
             raise serializers.ValidationError(
-                "Group not allowed. Choices are %s".format(
-                    ", ".join(self.Meta.model.GROUP_CHOICES)
-                )
+                "Group not allowed. Choices are: %s"
+                % (", ".join(self.Meta.model.GROUP_CHOICES))
             )
         return value
 

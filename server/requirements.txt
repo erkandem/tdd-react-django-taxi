@@ -42,8 +42,11 @@ django==4.1.7
     # via
     #   -r requirements.in
     #   channels
+    #   django-cors-headers
     #   djangorestframework
     #   djangorestframework-simplejwt
+django-cors-headers==3.14.0
+    # via -r requirements.in
 django-environ==0.10.0
     # via -r requirements.in
 djangorestframework==3.14.0

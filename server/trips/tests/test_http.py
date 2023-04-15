@@ -77,7 +77,7 @@ class AuthenticationTest(APITestCase):
         self.assertEqual(response.data["last_name"], new_user.last_name)
         self.assertEqual(response.data["group"], new_user.group)
 
-    def test_user_has_non_existing_group_can_not_sign_up(self):
+    def test_user_can_not_sign_up_with_non_existing_group(self):
         url = reverse("sign_up")
         User = get_user_model()
         group = "shenanigan"
@@ -94,6 +94,11 @@ class AuthenticationTest(APITestCase):
         response = self.client.post(url, data=data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("group", response.data)
+        self.assertEqual(
+            str(response.data["group"][0]),
+            "Group not allowed. Choices are: %s" % (", ".join(User.GROUP_CHOICES)),
+        )
 
     def test_user_can_log_in(self):
         user = create_user()

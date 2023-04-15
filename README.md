@@ -878,3 +878,56 @@ I miss the unit tests
 
 Docker is cool to find undocumented system dependencies.
 Found, that I didn't specify `graphviz` and `graphviz-dev`.
+
+### 10 Adjustments to the Container Setup
+
+#### Tests
+
+In this chapter the Cypress test cases were refactored to avoid mocking
+the HTTP requests. I went a step further and removed mores stubs. And it payed off
+by discovering some mistakes in wiring the error messages :).
+
+For a production ready app, it would be nice to collect all validation errors
+before responding to the front end
+
+#### Faker
+Since the app uses the sign-up feature against the backend and the username
+has a unique constraint it was necessary to get a unique username for each test run.
+Faker was used for get meaningful random values.
+
+The package changed a bit compared to the tutorial.
+
+```sh
+yarn add @faker-js/faker --dev
+# 7.6.0 in the project vs 5.5.3
+```
+Ref.: https://fakerjs.dev/guide/
+
+#### Chai via Cypress
+
+Cypress is uses ChaiJS, so the `expect` method is available to make
+e.g. non DOM assertions
+https://www.chaijs.com/api/bdd/
+
+#### DRYing up Credential Usage
+
+A found few more occasions where a password for the tests were written as literals and
+replaced them by using `Cypress.env("credentials")` like suggested in previous chapters.
+
+#### CORS
+
+To avoid cross site attacks CORS is implemented in clients.
+For Django, there is the `django-cors-headers` is available.
+
+It evaluates the request for the respective headers/cookies in
+a middleware.
+
+Ref.: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
+
+#### Environment Variables in Node
+
+Env values can be read out via `process.env.<THE_ENV_KEY>`
+
+```js
+const url = `${process.env.REACT_APP_BASE_URL}/api/sign_up/`;
+```

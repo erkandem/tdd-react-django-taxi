@@ -72,9 +72,12 @@ django==4.1.7
     # via
     #   -r requirements.txt
     #   channels
+    #   django-cors-headers
     #   django-extensions
     #   djangorestframework
     #   djangorestframework-simplejwt
+django-cors-headers==3.14.0
+    # via -r requirements.txt
 django-environ==0.10.0
     # via -r requirements.txt
 django-extensions==3.2.1

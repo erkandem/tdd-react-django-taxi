@@ -19,7 +19,7 @@ function SignUp(props) {
     formData.append("group", values.group);
     formData.append("photo", values.photo);
     try {
-      const url = "/api/sign_up";
+      const url = `${process.env.REACT_APP_BASE_URL}/api/sign_up/`;
       const response = await axios.post(url, formData);
       setSubmitted(true);
     } catch (response) {
@@ -51,7 +51,7 @@ function SignUp(props) {
               firstName: "",
               lastName: "",
               password: "",
-              group: userGroupChoices.rider,
+              group: userGroupChoices.rider.literal,
               photo: [],
             }}
             onSubmit={onSubmit}

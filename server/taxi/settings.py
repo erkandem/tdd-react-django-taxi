@@ -49,11 +49,13 @@ INSTALLED_APPS = [
     # third party apps
     "rest_framework",
     "django_extensions",
+    "corsheaders",
     # own apps
     "trips",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -62,7 +64,10 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
-
+CORS_ALLOWED_ORIGINS = [
+    # TODO: use it an env
+    "http://localhost:3001",
+]
 ROOT_URLCONF = "taxi.urls"
 ASGI_APPLICATION = "taxi.asgi.application"
 
