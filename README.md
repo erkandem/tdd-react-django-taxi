@@ -931,3 +931,9 @@ Env values can be read out via `process.env.<THE_ENV_KEY>`
 ```js
 const url = `${process.env.REACT_APP_BASE_URL}/api/sign_up/`;
 ```
+
+## Part 3
+
+### 1 
+
+### 2 The User

@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import { Container, Navbar, Button, Form } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import { Outlet, Route, Routes } from "react-router-dom";
-import "./App.css";
+import axios from "axios";
 import Landing from "./components/Landing";
 import SignUp from "./components/SignUp";
 import LogIn from "./components/LogIn";
+import Driver from "./components/Driver";
+import Rider from "./components/Rider";
 
-import axios from "axios";
+import "./App.css";
 
 function App() {
   // not an issue bc the actual credentials
@@ -45,6 +47,8 @@ function App() {
           path="log-in"
           element={<LogIn isLoggedIn={isLoggedIn} logIn={logIn} />}
         />
+        <Route path="rider" element={<Rider />}></Route>
+        <Route path="driver" element={<Driver />}></Route>
       </Route>
     </Routes>
   );
