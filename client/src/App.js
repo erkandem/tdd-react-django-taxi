@@ -23,10 +23,6 @@ function App() {
     try {
       const response = await axios.post(url, { username, password });
       window.localStorage.setItem("taxi.auth", JSON.stringify(response.data));
-      console.log(
-        "set local storage",
-        window.localStorage.getItem("taxi.auth")
-      );
       setLoggedIn(true);
       return { response, isError: false };
     } catch (error) {

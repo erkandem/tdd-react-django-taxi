@@ -1,4 +1,4 @@
-const userGroupChoices = {
+export const userGroupChoices = {
   rider: {
     literal: "rider",
     label: "Rider",
@@ -9,4 +9,13 @@ const userGroupChoices = {
   },
 };
 
-export default userGroupChoices;
+export const tripStatusChoices = {
+  requested: {
+    literal: "REQUESTED",
+    label: "Requested",
+  },
+  completed: {
+    literal: "COMPLETED",
+    label: "Completed",
+  },
+};

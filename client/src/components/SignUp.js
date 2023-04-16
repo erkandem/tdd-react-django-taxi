@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { ErrorMessage, Formik } from "formik";
+import { Formik } from "formik";
 import { Breadcrumb, Button, Card, Form } from "react-bootstrap";
 import { Link, Navigate } from "react-router-dom";
-import userGroupChoices from "../utils/constants";
+import { userGroupChoices } from "../utils/constants";
 import axios from "axios";
 
 function SignUp(props) {

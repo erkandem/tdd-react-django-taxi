@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import userGroupChoices from "../../src/utils/constants";
+import { userGroupChoices } from "../../src/utils/constants";
 
 const email = faker.internet.email();
 const firstName = faker.name.firstName();

@@ -1,4 +1,4 @@
-import userGroupChoices from "../utils/constants";
+import { userGroupChoices } from "../utils/constants";
 
 export const getUser = () => {
   const auth = JSON.parse(window.localStorage.getItem("taxi.auth"));
@@ -19,4 +19,12 @@ export const isDriver = () => {
 export const isRider = () => {
   const user = getUser();
   return user && user.group === "rider";
+};
+
+export const getAccessToken = () => {
+  const auth = JSON.parse(window.localStorage.getItem("taxi.auth"));
+  if (auth) {
+    return auth.access;
+  }
+  return undefined;
 };

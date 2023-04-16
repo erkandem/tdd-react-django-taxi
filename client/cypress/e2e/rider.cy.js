@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import userGroupChoices from "../../src/utils/constants";
+import { userGroupChoices } from "../../src/utils/constants";
 
 const driverEmail = faker.internet.email();
 const driverFirstName = faker.name.firstName();
@@ -9,6 +9,49 @@ const riderEmail = faker.internet.email();
 const riderFirstName = faker.name.firstName();
 const riderLastName = faker.name.lastName();
 const { password } = Cypress.env("credentials");
+
+const tripResponse = [
+  {
+    id: "23033964-f2ca-4150-bb8c-4a1182c3737d",
+    created: "2020-08-18T21:41:08.112946Z",
+    updated: "2020-08-18T21:41:08.112986Z",
+    pick_up_address: "A",
+    drop_off_address: "B",
+    status: "STARTED",
+    driver: {
+      id: 113,
+      first_name: driverFirstName,
+      last_name: driverLastName,
+      photo: "http://localhost:8003/media/photos/photo_QI0TTYh.jpg",
+    },
+    rider: {
+      id: 112,
+      first_name: riderFirstName,
+      last_name: riderLastName,
+      photo: "http://localhost:8003/media/photos/photo_r3XrvgH.jpg",
+    },
+  },
+  {
+    id: "2ee84fb5-f3c4-4aff-9677-b6476156d3bf",
+    created: "2020-08-18T21:41:08.112946Z",
+    updated: "2020-08-18T21:41:08.112986Z",
+    pick_up_address: "A",
+    drop_off_address: "B",
+    status: "COMPLETED",
+    driver: {
+      id: 113,
+      first_name: driverFirstName,
+      last_name: driverLastName,
+      photo: "http://localhost:8003/media/photos/photo_QI0TTYh.jpg",
+    },
+    rider: {
+      id: 112,
+      first_name: riderFirstName,
+      last_name: riderLastName,
+      photo: "http://localhost:8003/media/photos/photo_r3XrvgH.jpg",
+    },
+  },
+];
 
 describe("The rider dashboard", () => {
   before(() => {
@@ -43,5 +86,46 @@ describe("The rider dashboard", () => {
 
     cy.hash().should("eq", "#/rider");
     cy.logOut();
+  });
+  it("Displays messages for no trips", function () {
+    cy.intercept("GET", "api/trip/", {
+      // TODO: removal of the stub will create headeaches
+      //       inspected the request the token in the authorization
+      //       header was set to `undefined` =/
+      statusCode: 200,
+      body: [],
+    }).as("getTrips");
+
+    cy.logIn(riderEmail, password);
+
+    cy.visit("/#/rider");
+    cy.visit("/#/rider");
+
+    cy.wait("@getTrips");
+
+    // Current trips.
+    cy.get("[data-cy=trip-card]").eq(0).contains("No trips.");
+
+    // Completed trips.
+    cy.get("[data-cy=trip-card]").eq(1).contains("No trips.");
+  });
+  it("Displays current and completed trips", function () {
+    cy.intercept("GET", "api/trip/", {
+      statusCode: 200,
+      body: tripResponse,
+    }).as("getTrips");
+
+    cy.logIn(riderEmail, password);
+
+    cy.visit("/#/rider");
+    cy.visit("/#/rider");
+
+    cy.wait("@getTrips");
+
+    // Current trips.
+    cy.get("[data-cy=trip-card]").eq(0).contains("STARTED");
+
+    // Completed trips.
+    cy.get("[data-cy=trip-card]").eq(1).contains("COMPLETED");
   });
 });
