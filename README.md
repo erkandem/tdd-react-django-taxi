@@ -934,6 +934,93 @@ const url = `${process.env.REACT_APP_BASE_URL}/api/sign_up/`;
 
 ## Part 3
 
-### 1 
+Development goals in this part are going to be:
+ - Addding Dashboards for the Driver and Rider roles.
+ - Effect hooks to trigger side effects in React components.
+ - Work with websockets in React.
+ - Toast notification in React
+ - Integrate Google Maps API to the app
+
+Alongside, more Cypress test will be added and refactored
 
 ### 2 The User
+
+In this Chapter a User Dashboard will be created for a Driver and Rider role, 
+which will be accessible only for each specific role.
+
+#### Initial Component for a User Dashboard
+
+Components intended to show some user data were implemented for both groups,
+the rider and driver. The routes were placed in the `App` component as a subcomponent.
+
+`Breadcrumbs` were used to display the location. Quite comfortable for browsing
+back and forth.
+```js
+// Home > Dashboard
+function Rider(props) {
+  // ...
+  return (
+    <>
+      <Breadcrumb>
+        <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
+        <Breadcrumb.Item active>Dashboard</Breadcrumb.Item>
+      </Breadcrumb>
+      //..,
+    </>
+  );
+}
+```
+Ref.: https://react-bootstrap.github.io/components/breadcrumb/
+
+#### Role Based Logic
+
+User details are encoded in the access token, which was stored in `localStorage`.
+A logic was implemented in both the ride and driver component to ensure that
+the logged-in user is only able to access the page which is designed for his group.
+
+**TODO:**
+
+A user who is not logged in can still visit the page. He will just need
+to inject the part of the token with the user details. The details should 
+be verified by checking against the signature (third part of the token).
+However, any content on that page will require a request to the backend,
+which will fail anyway because a valid token was never issued in the first place.
+
+For now, there is an expected error within `getUser` since `JSON.parse` receives
+`null` as an argument.
+
+#### Refactoring
+
+Cypress enables reusing code e.g. as part of a setup routine.
+One way this already done was the `logIn` function in the `authentication.cy.js` suite.
+
+Another way to do it, is register these reusable functions in `cypress/support/commands.js`
+
+```js
+const helper = () => {
+    // cy.doSomeThing() ...
+};
+
+Cypress.Commands.add("helper", helper);
+```
+
+Although, the documentation suggests to define them as part of the `add` method
+
+```js
+Cypress.Commands.add("helper", () => {
+    // cy.doSomeThing() ...
+}
+);
+```
+
+Both seem to work. While the last one avoids spelling errors during registering
+the function, the first one enables local re-usability.
+
+**Error**
+
+At some point, something didn't go as suggested by the tutorial.
+Cypress needs to visit the rider or driver dashboard 2x.
+Only on the second time, the expected result is returned.
+Something is wrong somewhere.
+
+Ref.: https://docs.cypress.io/api/cypress-api/custom-commands

@@ -67,6 +67,7 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     # TODO: use it an env
     "http://localhost:3001",
+    "http://localhost:3000",
 ]
 ROOT_URLCONF = "taxi.urls"
 ASGI_APPLICATION = "taxi.asgi.application"

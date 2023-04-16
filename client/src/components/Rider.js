@@ -1,10 +1,12 @@
 import React from "react";
 import { Breadcrumb, Card } from "react-bootstrap";
-import { isRider } from "../services/AuthService";
 import { Navigate } from "react-router-dom";
+import { isRider } from "../services/AuthService";
 
 function Rider(props) {
+  console.log("FROM INSIDE RIDER COMPONENT", "isRider", isRider());
   if (!isRider()) {
+    console.log("isRider", isRider(), "FROM INSIDE IF STATEMENT");
     return <Navigate to="/" />;
   }
   return (

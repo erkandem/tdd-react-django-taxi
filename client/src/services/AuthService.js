@@ -1,7 +1,10 @@
+import userGroupChoices from "../utils/constants";
+
 export const getUser = () => {
   const auth = JSON.parse(window.localStorage.getItem("taxi.auth"));
   if (auth) {
-    const [, payload] = auth.access.split(".");
+    // prettier-ignore
+    const [,payload,] = auth.access.split(".");
     const decoded = window.atob(payload);
     return JSON.parse(decoded);
   }
@@ -10,7 +13,7 @@ export const getUser = () => {
 
 export const isDriver = () => {
   const user = getUser();
-  return user && user.group === "driver";
+  return user && user.group === userGroupChoices.driver.literal;
 };
 
 export const isRider = () => {
