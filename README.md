@@ -1144,3 +1144,123 @@ Static "snapshots" where used to mock the returned Trip response.
    by including some "wrong" data. 
  - a tool to create those snapshots would be cool
 
+### 5 Trip Details
+
+In this part, a page for the ride details was implemented.
+The details are going to be displayed after a user clicks
+on a specific trip within the dashboard which summarizes
+all trips.
+
+In the second part a refactoring will be done to the dashboard.
+
+#### Ride Details for the Rider and Driver Role 
+
+`DriverDetail` and `RiderDetail` components are going to be added to
+the app.
+
+`client.src.services.TripService.getTrip` was previously implemented to
+fetch the data of a specific trip from the backend.
+
+The response will be returned to the `*Detail` component in the
+shape of:
+```js
+{ response, isError: false }
+```
+
+The `isError` property helps to separate the XHR logic from the view since 
+the service function already evaluated whether the data is good
+to render or not.
+
+The data of that request will be cast into the `TripMedia` component and
+embedded into a `Card` component of `react-bootstrap`.
+
+Breadcrumbs were used as in the previous upper components.
+```js
+import { LinkContainer } from 'react-router-bootstrap';
+import { Breadcrumb } from 'react-bootstrap';
+function DriverDetail() {
+  // other code here  
+    return (
+      <>
+        {/*  */}
+        <Breadcrumb>
+          <LinkContainer to='/driver'>
+            <Breadcrumb.Item>Dashboard</Breadcrumb.Item>
+          </LinkContainer>
+            <Breadcrumb.Item active>Trip</Breadcrumb.Item>
+          </Breadcrumb>
+      {/*  */}
+      </>
+    )
+}
+```
+
+The route to the detail page will be sth like:
+
+`http://localhost:3001/#/driver/492fb009-6178-4837-bfc3-e4822f61ae0f`
+
+The path parameter can be built into the React router by specifying the
+param as a value to the `path` attribute with a leading `:`: 
+
+Experimenting around, I found one way to do it is to place the route into the `Routes` component.
+```js
+// client/src/App.js
+<Routes>
+  {/* other routs*/}
+    <Route path="driver" element={<Driver />}></Route>
+    <Route path="driver/:tripId" element={<DriverDetail />}></Route>
+</Routes>
+```
+
+Obviously, restating the parent route is not optimal.
+The next commit includes the official way. 
+
+Ref.: https://reactrouter.com/en/main/hooks/use-params
+Ref.: https://www.robinwieruch.de/react-router-nested-routes/
+
+**Todos**
+ - create an "interface" between the code and the fetched JSON
+   with e.g. https://ajv.js.org/guide/getting-started.html
+   It would be nice to get code completion like e.g. if a
+   pydantic schema is uses to define a response schema with e.g. fastapi 
+   only in JS :)
+ - The response schema could be pulled in from auto generated OpenAPI
+   schema created on the django side.
+   A complete API schema would include response/request
+   body schemata which could then be used in the React app
+   for validation (https://jsontypedef.com/)
+    - https://github.com/axnsan12/drf-yasg/
+    - https://github.com/tfranzel/drf-spectacular
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

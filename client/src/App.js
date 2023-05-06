@@ -8,6 +8,7 @@ import SignUp from "./components/SignUp";
 import LogIn from "./components/LogIn";
 import Driver from "./components/Driver";
 import Rider from "./components/Rider";
+import DriverDetail from "./components/DriverDetail";
 
 import "./App.css";
 
@@ -49,6 +50,7 @@ function App() {
         />
         <Route path="rider" element={<Rider />}></Route>
         <Route path="driver" element={<Driver />}></Route>
+        <Route path="driver/:tripId" element={<DriverDetail />}></Route>
       </Route>
     </Routes>
   );
