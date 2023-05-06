@@ -6,9 +6,12 @@ import axios from "axios";
 import Landing from "./components/Landing";
 import SignUp from "./components/SignUp";
 import LogIn from "./components/LogIn";
-import Driver from "./components/Driver";
 import Rider from "./components/Rider";
+import RiderDashboard from "./components/RiderDashboard";
+import RiderDetail from "./components/RiderDetail";
+import Driver from "./components/Driver";
 import DriverDetail from "./components/DriverDetail";
+import DriverDashboard from "./components/DriverDashboard";
 
 import "./App.css";
 
@@ -48,9 +51,14 @@ function App() {
           path="log-in"
           element={<LogIn isLoggedIn={isLoggedIn} logIn={logIn} />}
         />
-        <Route path="rider" element={<Rider />}></Route>
-        <Route path="driver" element={<Driver />}></Route>
-        <Route path="driver/:tripId" element={<DriverDetail />}></Route>
+        <Route path="rider" element={<Rider />}>
+          <Route index element={<RiderDashboard />} />
+          <Route path=":tripId" element={<RiderDetail />} />
+        </Route>
+        <Route path="driver" element={<Driver />}>
+          <Route index element={<DriverDashboard />} />
+          <Route path=":tripId" element={<DriverDetail />} />
+        </Route>
       </Route>
     </Routes>
   );

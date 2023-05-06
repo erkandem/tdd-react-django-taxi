@@ -128,4 +128,21 @@ describe("The rider dashboard", () => {
     // Completed trips.
     cy.get("[data-cy=trip-card]").eq(1).contains("COMPLETED");
   });
+
+  it("Shows details about a trip", () => {
+    cy.intercept("/api/trip/*", {
+      statusCode: 200,
+      body: tripResponse[0],
+    }).as("getTrip");
+
+    cy.logIn(riderEmail, password);
+
+    cy.visit(`/#/rider/${tripResponse[0].id}`);
+    cy.visit(`/#/rider/${tripResponse[0].id}`);
+    cy.wait("@getTrip");
+
+    cy.get("[data-cy=trip-card]")
+      .should("have.length", 1)
+      .and("contain.text", "STARTED");
+  });
 });

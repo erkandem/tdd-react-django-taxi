@@ -160,6 +160,7 @@ describe("The driver dashboard", function () {
     cy.logIn(driverEmail, password);
 
     cy.visit(`/#/driver/${tripResponse[0].id}`);
+    cy.visit(`/#/driver/${tripResponse[0].id}`);
     cy.wait("@getTrip");
 
     cy.get("[data-cy=trip-card]")

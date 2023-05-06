@@ -1218,6 +1218,35 @@ The next commit includes the official way.
 Ref.: https://reactrouter.com/en/main/hooks/use-params
 Ref.: https://www.robinwieruch.de/react-router-nested-routes/
 
+#### Refactoring, proper Route Nesting and RiderDetail
+
+The proper way to nest routes is:
+
+```js
+// App.js or whatever the SPA entrypoint component is 
+<Routes>
+  <Route path="users" element={ UserContainerComponent }>
+    <Route index element={ UserLandingOrIndexComponent } />
+    <Route path=":dynamicPathParamLikeSomeID" element={ UserDetailComponent } />
+  </Route>  
+</Routes>
+```
+
+In combination with `UserContainerComponent` having:
+
+```js
+function UserContainerComponent(props) {
+  return <Outlet />
+}
+```
+
+As a result 
+ - logic is moved from `Driver` to `DriverDashboard`
+ - `Driver` acts ony as a socket to "Outlet" either `DriverDashboard` or `DriverDetail`
+
+The same pattern is applied to the `Rider` view and rider child views.
+
+
 **Todos**
  - create an "interface" between the code and the fetched JSON
    with e.g. https://ajv.js.org/guide/getting-started.html
