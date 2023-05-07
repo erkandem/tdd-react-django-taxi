@@ -146,7 +146,7 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "trips.User"
-REDIS_URL = env.url("REDIS_URL", "redis://localhost:6379")
+REDIS_URL = env.str("REDIS_URL", "redis://localhost:6379")
 
 CHANNEL_LAYERS = {
     "default": {

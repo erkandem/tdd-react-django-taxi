@@ -1,12 +1,17 @@
 import { userGroupChoices } from "../utils/constants";
 
+export const parsePayloadOfAccessToken = (accessToken) => {
+  // prettier-ignore
+  const [,payload,] = accessToken.split(".");
+  const decoded = window.atob(payload);
+  return JSON.parse(decoded);
+};
+
 export const getUser = () => {
   const auth = JSON.parse(window.localStorage.getItem("taxi.auth"));
   if (auth) {
     // prettier-ignore
-    const [,payload,] = auth.access.split(".");
-    const decoded = window.atob(payload);
-    return JSON.parse(decoded);
+    return parsePayloadOfAccessToken(auth.access);
   }
   return undefined;
 };

@@ -1263,16 +1263,87 @@ The same pattern is applied to the `Rider` view and rider child views.
 
 
 
+### 6  Ride Requests
 
 
+This chapter focuses on the enabling a rider to request a ride.
+Likewise, a driver should be able to accept a ride request.
+Both features were implemented via the WebSocket protocol on the
+backend. `rxjs` is going to be used to provide the WS functionality
+for the client code.
 
 
+#### Requesting a Ride
+
+Interacting with the trip creation backend requires communicating via WebSockets.
+To ease the work  `rxjs` package was added:
+
+     yarn add rxjs
+     # 7.5.7 in tutorial, 7.8.1 in the code
+ 
+In its core, the feature relies on 1) a `Formik` form to collect the data
+and 2) on the websocket communication which is triggered in the `onSubmit` logic.
+
+1) and 2) are placed in a new component and wired up in `App.js` with 
+nested route. Importantly, the route to the trip request form needs to be placed **above**
+the route for the trip details view because the `:tripId` parameter would
+match anything including our new route `request`.
+ 
+Finally, a link to the form component is placed in the navigation
+(and the dashboard for good measure).
 
 
+#### Updating the List Requests for the Driver
 
+The `useEffect` hook is included into the `DriverDashboard` component.
+In that hook, the existing list of trips on the client side is updated
+from messages received via the websocket.
 
+Since a page refresh will fetch all current requested trips via XHR anyway,
+this change was all we needed to do.
 
+#### Debugging Lessons
 
+- There was an issue with the redis URL cast from the environment variables.
+  I reverted the URL schema validation back to a simple string in the `settings.py`.
+  Of course, it was  meant well, but the code downstream expect that variable to be a string :))).
+- 
+ - a test used setup code to create trip object on the database with
+   a hardcoded ID. I flushed the database once, made the ID 2 user unavailable.
+   debugged with logging settings for the docker-compose setup at the `create_trip` method
+   before I realized the source of the error in the test code.
+
+```python
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler'
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+}
+```
+
+**Todos**
+
+ - The current lifetime of the access token is set to 60 minutes.
+   although the refresh token is provided during login,
+   the app just errors out if the authentication fails.
+   
+   If an event is registered in the app, the validity (timestamp) of
+   the token can be evaluated and if the access token expired, automatically
+   trigger a refresh logic
+
+ - currently, the pickup and drop off addresses are just strings.
+   Some validation would be nice here, but of course it is an into tut.
+
+ - As mention previously, we should validate that the user doing the
+   WS request is the user in the data, who requests the trip.
 
 
 

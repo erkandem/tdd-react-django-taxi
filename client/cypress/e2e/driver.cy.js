@@ -1,5 +1,7 @@
 import { faker } from "@faker-js/faker";
 import { userGroupChoices } from "../../src/utils/constants";
+import { webSocket } from "rxjs/webSocket";
+import { parsePayloadOfAccessToken } from "../../src/services/AuthService";
 
 const driverEmail = faker.internet.email();
 const driverFirstName = faker.name.firstName();
@@ -87,6 +89,52 @@ describe("The driver dashboard", function () {
       riderLastName,
       userGroupChoices.rider.literal
     );
+  });
+  it("Can receive a ride request", function () {
+    cy.intercept("trip", {
+      statusCode: 200,
+      body: [],
+    }).as("getTrips");
+
+    cy.logIn(driverEmail, password);
+
+    cy.visit("/#/driver");
+    cy.visit("/#/driver");
+    cy.wait("@getTrips");
+
+    // Requested trips.
+    cy.get("[data-cy=trip-card]").eq(1).contains("No trips.");
+
+    // Make trip request as rider.
+    cy.request({
+      method: "POST",
+      url: "http://localhost:8003/api/log_in/",
+      body: {
+        username: riderEmail,
+        password: password,
+      },
+    }).then((response) => {
+      const accessToken = response.body.access;
+      const ws = webSocket(`ws://localhost:8003/taxi/?token=${accessToken}`);
+      const user = parsePayloadOfAccessToken(accessToken);
+      ws.subscribe();
+      ws.next({
+        type: "create.trip",
+        data: {
+          pick_up_address: "123 Main Street",
+          drop_off_address: "456 Elm Street",
+          // TODO:  DON'T HARDCODE IDs
+          // as we know IDs should never be hardcoded
+          // I had the issue that I previously deleted all users so
+          // the ID used in the tutorial - 2 - was not present anymore
+          // which raised an exception
+          rider: user.id,
+        },
+      });
+    });
+
+    // Requested trips.
+    cy.get("[data-cy=trip-card]").eq(1).contains("REQUESTED");
   });
 
   it("Cannot be visited if the user is not a driver", function () {

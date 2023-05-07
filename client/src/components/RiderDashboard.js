@@ -3,8 +3,9 @@ import { getTrips } from "../services/TripService";
 import { isRider } from "../services/AuthService";
 import { Navigate } from "react-router-dom";
 import { tripStatusChoices, userGroupChoices } from "../utils/constants";
-import { Breadcrumb } from "react-bootstrap";
+import { Breadcrumb, Button } from "react-bootstrap";
 import TripCard from "./TripCard";
+import { LinkContainer } from "react-router-bootstrap";
 
 function RiderDashboard() {
   const [trips, setTrips] = useState([]);
@@ -45,6 +46,10 @@ function RiderDashboard() {
         <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
         <Breadcrumb.Item active>Dashboard</Breadcrumb.Item>
       </Breadcrumb>
+      <LinkContainer to="/rider/request">
+        <Button variant="success">Request a Ride</Button>
+      </LinkContainer>
+
       <TripCard
         title="Current Trip"
         trips={getCurrentTrips()}

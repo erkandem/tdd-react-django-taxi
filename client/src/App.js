@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Container, Navbar, Button, Form } from "react-bootstrap";
+import { Container, Navbar, Button, Form, Nav } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import { Outlet, Route, Routes } from "react-router-dom";
 import axios from "axios";
@@ -9,11 +9,13 @@ import LogIn from "./components/LogIn";
 import Rider from "./components/Rider";
 import RiderDashboard from "./components/RiderDashboard";
 import RiderDetail from "./components/RiderDetail";
+import RiderRequest from "./components/RiderRequest";
 import Driver from "./components/Driver";
 import DriverDetail from "./components/DriverDetail";
 import DriverDashboard from "./components/DriverDashboard";
 
 import "./App.css";
+import { isRider } from "./services/AuthService";
 
 function App() {
   // not an issue bc the actual credentials
@@ -53,6 +55,7 @@ function App() {
         />
         <Route path="rider" element={<Rider />}>
           <Route index element={<RiderDashboard />} />
+          <Route path="request" element={<RiderRequest />} />
           <Route path=":tripId" element={<RiderDetail />} />
         </Route>
         <Route path="driver" element={<Driver />}>
@@ -74,6 +77,13 @@ function Layout({ isLoggedIn, logOut }) {
           </LinkContainer>
           <Navbar.Toggle />
           <Navbar.Collapse className="justify-content-end">
+            {isRider() && (
+              <Nav className="me-auto">
+                <LinkContainer to="/rider/request">
+                  <Nav.Link data-cy="request-trip">Request a trip</Nav.Link>
+                </LinkContainer>
+              </Nav>
+            )}
             {isLoggedIn && (
               <Form>
                 <Button type="button" data-cy="logOut" onClick={() => logOut()}>

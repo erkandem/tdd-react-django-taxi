@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getTrips } from "../services/TripService";
+import { connect, getTrips, messages } from "../services/TripService";
 import { isDriver } from "../services/AuthService";
 import { Navigate } from "react-router-dom";
 import { tripStatusChoices, userGroupChoices } from "../utils/constants";
@@ -19,6 +19,23 @@ function DriverDashboard(props) {
     };
     loadTrips();
   }, []);
+
+  useEffect(() => {
+    // setup
+    connect();
+    const subscription = messages.subscribe((message) => {
+      setTrips((prevTrips) => [
+        ...prevTrips.filter((trip) => trip.id !== message.data.id),
+        message.data,
+      ]);
+    });
+    // cleanup
+    return () => {
+      subscription.unsubscribe();
+    };
+    // dependencies from outer scope used within ``useEffect``
+    // and dependencies
+  }, [setTrips]);
 
   if (!isDriver()) {
     return <Navigate to="/" />;
