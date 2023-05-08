@@ -4,6 +4,7 @@ import { isDriver } from "../services/AuthService";
 import { Navigate } from "react-router-dom";
 import { tripStatusChoices, userGroupChoices } from "../utils/constants";
 import { Breadcrumb } from "react-bootstrap";
+import { toast } from "react-toastify";
 import TripCard from "./TripCard";
 
 function DriverDashboard(props) {
@@ -28,6 +29,7 @@ function DriverDashboard(props) {
         ...prevTrips.filter((trip) => trip.id !== message.data.id),
         message.data,
       ]);
+      updateToast(message.data);
     });
     // cleanup
     return () => {
@@ -36,6 +38,13 @@ function DriverDashboard(props) {
     // dependencies from outer scope used within ``useEffect``
     // and dependencies
   }, [setTrips]);
+
+  const updateToast = (trip) => {
+    const riderName = `${trip.rider.first_name} ${trip.rider.last_name}`;
+    if (trip.driver === null) {
+      toast.info(`${riderName} has requested a trip.`);
+    }
+  };
 
   if (!isDriver()) {
     return <Navigate to="/" />;

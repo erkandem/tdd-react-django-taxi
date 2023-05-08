@@ -13,6 +13,8 @@ import RiderRequest from "./components/RiderRequest";
 import Driver from "./components/Driver";
 import DriverDetail from "./components/DriverDetail";
 import DriverDashboard from "./components/DriverDashboard";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import "./App.css";
 import { isRider } from "./services/AuthService";
@@ -40,7 +42,6 @@ function App() {
     window.localStorage.removeItem("taxi.auth");
     setLoggedIn(false);
   };
-
   return (
     <Routes>
       <Route
@@ -70,6 +71,7 @@ function App() {
 function Layout({ isLoggedIn, logOut }) {
   return (
     <>
+      <ToastContainer />
       <Navbar bg="light" expand="lg" variant="light">
         <Container>
           <LinkContainer to="/">

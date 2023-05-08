@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { getTrips } from "../services/TripService";
-import { isRider } from "../services/AuthService";
 import { Navigate } from "react-router-dom";
-import { tripStatusChoices, userGroupChoices } from "../utils/constants";
 import { Breadcrumb, Button } from "react-bootstrap";
-import TripCard from "./TripCard";
 import { LinkContainer } from "react-router-bootstrap";
-import { connect, messages } from "../services/TripService";
+import { toast } from "react-toastify";
+import { tripStatusChoices, userGroupChoices } from "../utils/constants";
+import { getTrips, connect, messages } from "../services/TripService";
+import { isRider } from "../services/AuthService";
+import TripCard from "./TripCard";
 
 function RiderDashboard() {
   const [trips, setTrips] = useState([]);
@@ -28,6 +28,7 @@ function RiderDashboard() {
         ...prevTrips.filter((trip) => trip.id !== message.data.id),
         message.data,
       ]);
+      updateToast(message.data);
     });
     return () => {
       if (subscription) {
@@ -36,6 +37,23 @@ function RiderDashboard() {
     };
   }, [setTrips]);
 
+  const updateToast = (trip) => {
+    if (trip === null) {
+      return;
+    }
+    if (trip.status === "REQUESTED") {
+      toast.info(`Requested a trip`);
+      return;
+    }
+    const driverName = `${trip.driver.first_name} ${trip.driver.last_name}`;
+    if (trip.status === "STARTED") {
+      toast.info(`${driverName} is coming to pick you up.`);
+    } else if (trip.status === "IN_PROGRESS") {
+      toast.info(`${driverName} is headed to your destination.`);
+    } else if (trip.status === "COMPLETED") {
+      toast.info(`${driverName} has dropped you off.`);
+    }
+  };
   if (!isRider()) {
     return <Navigate to="/" />;
   }

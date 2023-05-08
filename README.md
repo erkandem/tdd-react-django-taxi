@@ -1443,3 +1443,47 @@ since it is indeed received from the backend.
    mistakes, provide IDE dev support... 
 
 
+### 8 Toasts
+
+To display trip updates "toast" components are used.
+`react-toastify` is used in this app.
+
+#### Implementing it
+    yarn add react-toastify
+    # 9.1.1 in the tut, 9.1.2 in the project
+
+The outlet container - `ToastContainer` is placed in the root 
+component (such that it doesn't matter which page  the user receiving
+the update actually is on).
+
+The logic to fire them is wired up in the `useEffect` hooks within
+the rider and driver dashboard component, bc we placed our web socket 
+listener there.
+
+`react-toastify` provides several preconfigured layouts.
+```js
+// https://fkhadra.github.io/react-toastify/api/toast
+toast.success("Hello", options); 
+toast.info("World", options); 
+toast.warn(MyComponent, options); 
+toast.error("Error", options);
+```
+
+The actual message is dynamically composed based on the 
+new status. `updateToast` is used to isolate this logic within
+the Dashboard components.
+
+Refs.: 
+ - https://github.com/fkhadra/react-toastify#readme
+ - https://fkhadra.github.io/react-toastify/introduction/
+
+
+**Todos**
+ - How can cover toasts with tests? Added an if branches to handle 
+   possible nulls and a status "REQUESTED" bc both will throw errors
+   while the message is composed. (`driveName` can't be assembled)
+
+ - Additionally, to the pop-ups, changes could be highlighted
+   using CSS animations?
+ - error messages could be wired up to use the pop-ups as well
+   especially the web socket calls.
