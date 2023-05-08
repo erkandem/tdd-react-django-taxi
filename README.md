@@ -1345,22 +1345,101 @@ LOGGING = {
  - As mention previously, we should validate that the user doing the
    WS request is the user in the data, who requests the trip.
 
+ - The `rider` user has no way to verify that his ride request succeeded
+   or failed bc no feedback message is issued. The rider dashboard also
+   does not show requested trips. (what if he wants to cancel it?)
 
 
+### 7 Updating Trips
+
+Last chapter implemented the feature to request a ride. The counterpart
+to that feature is to enable a driver to accept the request.
+
+#### Accepting a Ride as a Driver
+
+Each new request is listed on the drivers' dashboard. While we could
+place a button on the summary objects in that list the tutorial placed the
+button to accept a request in the detail view.
+
+An "accept" button on the dashboard should if at all lead to the detail
+page and focus on the real accept button. That way, we have a chance
+to display additional information about the ride before a driver accepts it.
+
+This helps to decide with more confidence, as ideally a driver can only accept
+one ride at a time (* without scheduling feature, current implementation is a spot
+market). Same restrictions apply to the rider.
+
+Overall com overhang e.g. for cancellations might be avoided.
+
+Technically, the solution was provided by placing an "Accept" button
+on the footer of the `DriverDetail` component.
+
+`DriverDetail` is also used to display started, ongoing, completed and other Trips.
+So the displayed button depend on the status of the trip, which is determined
+within `createData` using switch-case statements.
+
+```js
+const createData = (status) => {
+  switch (status) {
+    case 'REQUESTED':
+      return {
+        disabled: false,
+        message: 'Drive to pick up',
+        nextStatus: 'STARTED',
+        variant: 'primary'
+      };
+    //...
+  }
+};
+```
+The properties of the returned object are then used to instantiate the button:
+
+```js
+{
+  (boolean) && (
+    <Card.Footer>
+      <Button 
+        disabled={data.disabled}
+        className={data.variant} 
+        onClick={() => updateTripStatus(data.nextStatus)}
+      >{data.message}</Button>
+    </Card.Footer>
+
+  )
+}
+```
+
+As a result of a `click` event `updateTripStatus` is fired.
+It handles the state change uses the web socket utilities which 
+were factored out to the `TripService`. 
+
+**TODO**
+ - No validation on the update of the UI within the `DriverDetail` page.
+   See `TODO` in `updateTripStatus`
+   I remember a Mantra for WebSockets which was like 
+   "Treat it as if it can fail at any step anytime"
+   
+   A similar issue was observed in the local updates (without actually retrieving data from the backend ) 
+   in https://testdriven.io/courses/learn-vue/saving-data-via-http-post/
+
+#### Receiving updates via WebSocket for the Rider
+
+On accepting a ride, the rider will be recipient of a message
+about the event, since he was added to the trip group by backend.
+
+A receiving logic was implemented within the `RiderDashboard` to 
+reflect an updated trip in the UI. This UI update is more safe
+than the update on the driver side in the previous section of this chapter
+since it is indeed received from the backend.
 
 
+**TODO** 
+ - In the associated test to the current chapter, only a change
+   from `REQUESTED` to `IN_PROGRESS` was implemented. 
+   The other statements should be checked as well ;)
 
-
-
-
-
-
-
-
-
-
-
-
-
+ - JS really calls by design for mistakes to happen. Types/Validation
+   on the function or external communication level would help avoid
+   mistakes, provide IDE dev support... 
 
 

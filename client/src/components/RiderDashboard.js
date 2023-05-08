@@ -6,6 +6,7 @@ import { tripStatusChoices, userGroupChoices } from "../utils/constants";
 import { Breadcrumb, Button } from "react-bootstrap";
 import TripCard from "./TripCard";
 import { LinkContainer } from "react-router-bootstrap";
+import { connect, messages } from "../services/TripService";
 
 function RiderDashboard() {
   const [trips, setTrips] = useState([]);
@@ -20,6 +21,20 @@ function RiderDashboard() {
     };
     loadTrips();
   }, []);
+  useEffect(() => {
+    connect();
+    const subscription = messages.subscribe((message) => {
+      setTrips((prevTrips) => [
+        ...prevTrips.filter((trip) => trip.id !== message.data.id),
+        message.data,
+      ]);
+    });
+    return () => {
+      if (subscription) {
+        subscription.unsubscribe();
+      }
+    };
+  }, [setTrips]);
 
   if (!isRider()) {
     return <Navigate to="/" />;
