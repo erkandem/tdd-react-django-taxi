@@ -1487,3 +1487,110 @@ Refs.:
    using CSS animations?
  - error messages could be wired up to use the pop-ups as well
    especially the web socket calls.
+
+### 9 Google Maps
+
+Creating a trip screams to use Gmaps to visualize at least the route and
+this was done in chapter 9.
+
+
+#### Acquiring an API Key
+
+The API-Key needs to generated from GCP Cloud Console.
+https://console.cloud.google.com/google/maps-apis
+
+Since it's best practice to limit the rights/access to the ones needed,
+a subset all available Google APIs was enabled.
+
+Host restriction can also be made.
+**TODO**
+ - limit hosts (additional header required when maps API is called)
+
+Since the usage of this key will incur costs, it's best kept secret.
+The tut adds it into the `docker-compose` file which is deadly since this
+run through is under source control.
+
+The solution was to create another `.env` file and reference it in the
+respective service:
+
+```yaml
+services:
+  taxi-client:
+    env_file:
+      - ./.env.compose
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - REACT_APP_BASE_URL=http://localhost:8003
+      - REACT_APP_WS_BASE_URL=ws://localhost:8003
+```
+
+Both `env_file` and `environment` can be specified. Vars in `environment` will
+overwrite values read out of `.env`.
+
+#### Creating the Map
+
+There are multiple ways to do it. The tut focused on `react-google-maps/api`:
+
+    yarn add @react-google-maps/api
+    2.14.0 used in the tut, 2.18.1 in the project_
+
+A `Map` component was created and placed below the ride request form.
+Many parts of the `Map` component is predefined and can be read in the
+documentation of the package.
+
+Ref.: https://react-google-maps-api-docs.netlify.app/
+
+
+The location of the user will be searched and will need the user permission. 
+Ref.: https://developer.mozilla.org/en-US/docs/Web/API/Navigator/geolocation
+
+#### Re-Render Loop
+
+With some drop off and pick up locations, the map re-rendered itself endlessly
+triggering many API calls/s.
+I found a solution on stackoverflow in which the callback, triggering the API call
+is limited to `n` attempts.
+
+```js
+  const count = useRef(0)
+  const directionsCallback = (response) => {
+    if (response !== null && response.status === "OK" && count.current <=2) {
+      setResponse(response);
+      count.current += 1;
+    } else {
+      count.current = 0;
+    }
+  };
+```
+
+The counter is reset on errors. Other than that it re-renders then the value
+of the input changes, since the input will start incomplete, triggering a 
+clueless gmaps backend on where `Ber` is but will stop calling the API
+once the input is completed and gmaps found a route to `Berlin` ;)
+
+Ref.: https://stackoverflow.com/a/68039370/10124294
+
+#### Ref
+
+`useRef` was used in the previous solution to get a stateful var.
+
+Besides `useState` another concept of stateful var is used in react called `ref`.
+Unlike `useState`, `useRef` will not trigger rerender upon change of the underlying value
+of the var.
+
+
+> The main difference between both is :
+> useState causes re-render, useRef does not.
+> The common between them is, both useState and useRef can remember their data after re-renders. So if your variable is something that decides a view layer render, go with useState. Else use useRef
+> I would suggest reading this article.
+
+Ref.: https://stackoverflow.com/a/56456055/10124294
+Ref.: https://blog.logrocket.com/usestate-vs-useref/
+Ref.: https://react.dev/reference/react/useRef
+
+
+#### TODO
+ - No test coverage =/
+ - autocomplete feature on the input elements would be very nice.
+   In fact: industry default.
+ 

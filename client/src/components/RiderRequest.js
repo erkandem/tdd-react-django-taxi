@@ -1,13 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { createTrip } from "../services/TripService";
 import { Formik } from "formik";
 import { Button, Form, Card, Breadcrumb } from "react-bootstrap";
 import { Navigate } from "react-router-dom";
 import { LinkContainer } from "react-router-bootstrap";
 import { getUser } from "../services/AuthService";
+import Map from "./Map";
 
 function RiderRequest() {
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [lat, setLat] = useState(38.897957);
+  const [lng, setLng] = useState(-77.03656);
+
+  useEffect(() => {
+    if (window.navigator.geolocation) {
+      window.navigator.geolocation.getCurrentPosition((position) => {
+        setLat(position.coords.latitude);
+        setLng(position.coords.longitude);
+      });
+    }
+  }, []);
   const onSubmit = (values, actions) => {
     const currentUser = getUser();
     console.log("current user.", currentUser);
@@ -60,7 +72,6 @@ function RiderRequest() {
                     </Form.Control.Feedback>
                   )}
                 </Form.Group>
-
                 <Form.Group className="mb-3" controlId="dropOffAddress">
                   <Form.Label>Drop off address:</Form.Label>
                   <Form.Control
@@ -76,6 +87,15 @@ function RiderRequest() {
                     </Form.Control.Feedback>
                   )}
                 </Form.Group>
+                <div className="d-grid">
+                  <Map
+                    lat={lat}
+                    lng={lng}
+                    zoom={13}
+                    pickUpAddress={values.pickUpAddress}
+                    dropOffAddress={values.dropOffAddress}
+                  />
+                </div>
                 <div className="d-grid">
                   <Button
                     disabled={isSubmitting}
